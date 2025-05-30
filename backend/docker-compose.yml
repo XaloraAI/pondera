@@ -1,0 +1,49 @@
+services:
+  backend:
+    container_name: pondera-backend
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    expose:
+      - '5000'
+    env_file: .env
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'python',
+          '-c',
+          "import urllib.request; urllib.request.urlopen('http://localhost:5000/')",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - app-network
+
+  nginx:
+    container_name: pondera-nginx
+    image: jonasal/nginx-certbot:latest
+    ports:
+      - '8080:80'
+      - '443:443'
+    volumes:
+      - ./cloudflare.ini:/etc/letsencrypt/cloudflare.ini:ro
+      - ./user_conf.d:/etc/nginx/user_conf.d:ro
+      - nginx_secrets:/etc/letsencrypt
+    environment:
+      - CERTBOT_EMAIL=team@heurist.xyz
+      - CERTBOT_AUTHENTICATOR=dns-cloudflare
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  nginx_secrets:
