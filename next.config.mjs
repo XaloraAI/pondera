@@ -9,7 +9,7 @@ const nextConfig = {
       path: false,
       zlib: false,
       http: false,
-      https: false,
+      https: false, 
       url: false,
       util: false,
       stream: false,
