@@ -7,7 +7,7 @@ const isDevelopment = process.env.NODE_ENV === 'development'
 export const env = createEnv({
   server: {
     HEURIST_GATEWAY_URL: z.string().min(1),
-    HEURIST_AUTH_KEY: z.string().min(1),
+    HEURIST_AUTH_KEY: z.string().min(1), 
     UPSTASH_REDIS_REST_URL: isDevelopment
       ? z.string().optional()
       : z.string().min(1),
